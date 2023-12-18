@@ -1,6 +1,7 @@
 const fs = require('fs');
 const csv = require('csv-parser');
 
+let zipCodeAges = {};
 fs.createReadStream('Police_Arrests.csv')
   .pipe(csv())
   .on('data', (row) => {
@@ -10,15 +11,20 @@ fs.createReadStream('Police_Arrests.csv')
     zipCodes.push(arLZip); 
     if(!(AgeAtArrestTime === (''))){
         arrestAge.push(AgeAtArrestTime);
+        if(!zipCodeAges[arLZip]){
+          zipCodeAges[arLZip] = [];
+      }
+      zipCodeAges[arLZip].push(AgeAtArrestTime);
     }
     race.push(Race);
   })
   
   .on('end', () => {
+    let mostArrestZipCode = findMode(zipCodes);
     console.log('The race arrested most is ' + findMode(race));
-    console.log('The zip code with the most arrest is ' + findMode(zipCodes));
+    console.log('The zip code with the most arrest is ' + mostArrestZipCode);
     console.log('The age with the most arrest is ' + findMode(arrestAge) + " with the average age of " + findMean(arrestAge));
-    console.log('The ')
+    console.log('The age with most arest in ' + mostArrestZipCode + ' is ' + findMode(zipCodeAges[mostArrestZipCode]) + ' with the average age in this zip code being ' + findMean(zipCodeAges[mostArrestZipCode]));
   });
 
   let race = [];
