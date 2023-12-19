@@ -25,7 +25,7 @@ fs.createReadStream('Police_Arrests.csv')
     console.log('The race arrested most is ' + findMode(race));
     console.log('The zip code with the most arrest is ' + mostArrestZipCode);
     console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAgesInZip.length + ' with the average age of ' + findMean(arrestAge));
-    console.log('The age with most arest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
+    console.log('The age with most arrest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
     console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
   });
 //create arrays that will store the data from line 8 to line 19
