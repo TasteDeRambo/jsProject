@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs');//this is just to understand how the code works(rememeber to delete later)
 const csv = require('csv-parser');
 
 let zipCodeAges = {};

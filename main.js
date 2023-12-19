@@ -16,22 +16,24 @@ fs.createReadStream('Police_Arrests.csv')
       }
       zipCodeAges[arLZip].push(AgeAtArrestTime);
     }
-    race.push(Race);
+    race.push(Race);//created race array, ages at zip code, zip code array
   })
   
   .on('end', () => {
-    let mostArrestZipCode = findMode(zipCodes);
-    let arrestAgesInZip = zipCodeAges[mostArrestZipCode];
+    let mostArrestZipCode = findMode(zipCodes);//in order to get the ages at a zip code, change zipCodeAges['this part']
+    let arrestAgesInZip = zipCodeAges[mostArrestZipCode];// store the ages from the zip code provided in an array
     console.log('The race arrested most is ' + findMode(race));
     console.log('The zip code with the most arrest is ' + mostArrestZipCode);
     console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAgesInZip.length + ' with the average age of ' + findMean(arrestAge));
     console.log('The age with most arest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
+    console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
   });
-
+//create arrays that will store the data from line 8 to line 19
   let race = [];
   let zipCodes = [];
   let arrestAge = [];
 
+//math functions 
   function findMode(arr) {
     let frequency = {};  // array of frequency.
     let maxFreq = 0;  // holds the max frequency.
@@ -60,3 +62,15 @@ fs.createReadStream('Police_Arrests.csv')
     }
     return sum / arr.length;
   }
+  function findLeastOccurring(array) {
+    let frequency = array.reduce((acc, val) => {
+        acc[val] = (acc[val] || 0) + 1;
+        return acc;
+    }, {});
+
+    let minFrequency = Math.min(...Object.values(frequency));
+
+    let leastOccurring = Object.keys(frequency).filter(key => frequency[key] === minFrequency);
+
+    return leastOccurring;
+}
