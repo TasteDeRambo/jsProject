@@ -21,10 +21,11 @@ fs.createReadStream('Police_Arrests.csv')
   
   .on('end', () => {
     let mostArrestZipCode = findMode(zipCodes);
+    let arrestAgesInZip = zipCodeAges[mostArrestZipCode];
     console.log('The race arrested most is ' + findMode(race));
     console.log('The zip code with the most arrest is ' + mostArrestZipCode);
-    console.log('The age with the most arrest is ' + findMode(arrestAge) + " with the average age of " + findMean(arrestAge));
-    console.log('The age with most arest in ' + mostArrestZipCode + ' is ' + findMode(zipCodeAges[mostArrestZipCode]) + ' with the average age in this zip code being ' + findMean(zipCodeAges[mostArrestZipCode]));
+    console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAgesInZip.length + ' with the average age of ' + findMean(arrestAge));
+    console.log('The age with most arest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
   });
 
   let race = [];
