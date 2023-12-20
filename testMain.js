@@ -10,7 +10,7 @@ let arrestAge = [];
 // Initialize object to store ages at each zip code
 let zipCodeAges = {};
 
-// Read and parse the CSV file
+// Read and parse the 'Police_Arrests.csv' file
 fs.createReadStream('Police_Arrests.csv')
   .pipe(csv())
   .on('data', (row) => {
@@ -38,7 +38,7 @@ fs.createReadStream('Police_Arrests.csv')
   })
   .on('end', () => {
     // Calculate statistics
-    let mostArrestZipCode = findMode(zipCodes);
+    let mostArrestZipCode = findMode(zipCodes).join('');
     let arrestAgesInZip = zipCodeAges[mostArrestZipCode];
 
     // Print statistics
@@ -46,8 +46,25 @@ fs.createReadStream('Police_Arrests.csv')
     console.log('The zip code with the most arrest is ' + mostArrestZipCode);
     console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAge.length + ' with the average age of ' + findMean(arrestAge));
     console.log('The age with most arrest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' out of ' + arrestAgesInZip.length + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
-    console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
+    //console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
     console.log('Fun fact, the zip code that Townview is in has had ' + zipCodeAges['75203'].length + ' arrests as of 2014');
+
+    let populationAtZip;
+    let popDensityAtZip; 
+    // Read and parse the 'uszips.csv' file
+    fs.createReadStream('uszips.csv')//https://simplemaps.com/data/us-zips
+      .pipe(csv())
+      .on('data', (row) => {
+        // Check if this row's zip code matches the most arrested zip code
+        if (mostArrestZipCode===(row['zip'])) {
+          populationAtZip = row['population'];
+          popDensityAtZip = row['density'];
+        }
+      })
+      .on('end', () => {
+        console.log('The population of zip code ' + mostArrestZipCode + ' is ' + populationAtZip);
+        console.log('The population DENSITY of zip code ' + mostArrestZipCode + ' is ' + popDensityAtZip);
+      });
   });
 
 // Function to find the mode of an array
