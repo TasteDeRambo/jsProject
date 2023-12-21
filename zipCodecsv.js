@@ -1,20 +1,17 @@
-// Import required modules
 const fs = require('fs');
 const csv = require('csv-parser');
 
-// Initialize arrays to store data
 let race = [];
 let zipCodes = [];
 let arrestAge = [];
 
-// Initialize object to store ages at each zip code
 let zipCodeAges = {};
 
 // Read and parse the 'Police_Arrests.csv' file
 fs.createReadStream('Police_Arrests.csv')//https://www.dallasopendata.com/Public-Safety/Police-Arrests/sdr7-6v3j/data_preview
   .pipe(csv())
   .on('data', (row) => {
-    // Extract data from row
+
     var arLZip = row[Object.keys(row)[8]];
     var Race = row[Object.keys(row)[51]];
     var AgeAtArrestTime = row[Object.keys(row)[39]];
@@ -23,7 +20,6 @@ fs.createReadStream('Police_Arrests.csv')//https://www.dallasopendata.com/Public
     zipCodes.push(arLZip); 
     race.push(Race);
 
-    // If age is not empty, add it to the array
     if(!(AgeAtArrestTime === '')){
         arrestAge.push(AgeAtArrestTime);
 
@@ -37,16 +33,13 @@ fs.createReadStream('Police_Arrests.csv')//https://www.dallasopendata.com/Public
     }
   })
   .on('end', () => {
-    // Calculate statistics
     let mostArrestZipCode = findMode(zipCodes).join('');
     let arrestAgesInZip = zipCodeAges[mostArrestZipCode];
 
-    // Print statistics
     console.log('The race arrested most is ' + findMode(race));
     console.log('The zip code with the most arrest is ' + mostArrestZipCode);
     console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAge.length + ' with the average age of ' + findMean(arrestAge));
     console.log('The age with most arrest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' out of ' + arrestAgesInZip.length + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
-    //console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
     console.log('Fun fact, the zip code that Townview is in has had ' + zipCodeAges['75203'].length + ' arrests as of 2014');
 
     let populationAtZip;
@@ -64,7 +57,6 @@ fs.createReadStream('Police_Arrests.csv')//https://www.dallasopendata.com/Public
       .on('end', () => {
         console.log('As of 2020, \nThe population of zip code ' + mostArrestZipCode + ' is ' + populationAtZip);
         console.log('The population DENSITY of zip code ' + mostArrestZipCode + ' is ' + popDensityAtZip);
-        //create the csv read and try to make buildingsIn[mostArrestZipCode]
       });
       let buildingsInZip = 0;
       let buildingValues = [];
@@ -72,36 +64,31 @@ fs.createReadStream('Police_Arrests.csv')//https://www.dallasopendata.com/Public
         .pipe(csv())
         .on('data', (row) => {
           var values = [];
-          if(mostArrestZipCode===(row['Zip Code'])){
-            values = row('Values');
-            buildingValues.push(values);
+          
+          if(mostArrestZipCode===row[Object.keys(row)[10]]){
+            buildingValues.push(row[Object.keys(row)[5]]);
             buildingsInZip++;
           }
         })
         .on('end', () => {
-          console.log(buildingValues);
-          console.log(findMean(buildingValues) + ' is the mean value of the buidings in ' + mostArrestZipCode);
-          console.log(buildingsInZip + ' are the number of buildings in ' + mostArrestZipCode);
+          console.log(findMean(buildingValues) + ' is the mean value of the business buidings in ' + mostArrestZipCode);
+          console.log(buildingsInZip + ' is the number of business buildings in ' + mostArrestZipCode);
         })
   });
 
-// Function to find the mode of an array
 function findMode(arr) {
-    let frequency = {};  // Array of frequency.
-    let maxFreq = 0;  // Holds the max frequency.
+    let frequency = {};
+    let maxFreq = 0;  
     let modes = [];
 
-    // Calculate frequency of each value
     for(let i in arr) {
-        frequency[arr[i]] = (frequency[arr[i]] || 0) + 1; // Increment frequency.
+        frequency[arr[i]] = (frequency[arr[i]] || 0) + 1; 
 
-        // If this frequency is greater than the max so far, update max
         if(frequency[arr[i]] > maxFreq) {
             maxFreq = frequency[arr[i]];
         }
     }
 
-    // Find values with max frequency
     for(let k in frequency) {
         if(frequency[k] === maxFreq) {
            modes.push(k);
@@ -111,7 +98,6 @@ function findMode(arr) {
     return modes;
 }
 
-// Function to find the mean of an array
 function findMean(arr) {
     let sum = 0;
     for(let i = 0; i < arr.length; i++) {
@@ -120,7 +106,6 @@ function findMean(arr) {
     return sum / arr.length;
 }
 
-// Function to find the least occurring value in an array
 function findLeastOccurring(array) {
     let frequency = array.reduce((acc, val) => {
         acc[val] = (acc[val] || 0) + 1;
