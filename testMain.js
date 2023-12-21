@@ -62,7 +62,7 @@ fs.createReadStream('Police_Arrests.csv')
         }
       })
       .on('end', () => {
-        console.log('The population of zip code ' + mostArrestZipCode + ' is ' + populationAtZip);
+        console.log('As of 2020, \nThe population of zip code ' + mostArrestZipCode + ' is ' + populationAtZip);
         console.log('The population DENSITY of zip code ' + mostArrestZipCode + ' is ' + popDensityAtZip);
       });
   });
