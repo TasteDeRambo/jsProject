@@ -10,46 +10,6 @@ let arrestAge = [];//list of all age at arrest time
 // Initialize object to store ages at each zip code
 let zipCodeAges = {};//this gets all the ages in a provided zip code, see line 42 and 50 for examples
 
-// Read and parse the CSV file
-fs.createReadStream('Police_Arrests.csv')
-  .pipe(csv())
-  .on('data', (row) => {
-    // Extract data from row
-    var arLZip = row[Object.keys(row)[8]];
-    var Race = row[Object.keys(row)[51]];
-    var AgeAtArrestTime = row[Object.keys(row)[39]];
-
-    // Add data to arrays
-    zipCodes.push(arLZip); 
-    race.push(Race);
-
-    // If age is not empty, add it to the array
-    if(!(AgeAtArrestTime === '')){
-        arrestAge.push(AgeAtArrestTime);
-
-        // If this zip code is not already in the object, add it
-        if(!zipCodeAges[arLZip]){
-          zipCodeAges[arLZip] = [];
-        }
-
-        // Add age to the array for this zip code
-        zipCodeAges[arLZip].push(AgeAtArrestTime);
-    }
-  })
-  .on('end', () => {
-    // Calculate statistics
-    let mostArrestZipCode = findMode(zipCodes);
-    let arrestAgesInZip = zipCodeAges[mostArrestZipCode];
-
-    // Print statistics
-    console.log('The race arrested most is ' + findMode(race));
-    console.log('The zip code with the most arrest is ' + mostArrestZipCode);
-    console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAge.length + ' with the average age of ' + findMean(arrestAge));
-    console.log('The age with most arrest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' out of ' + arrestAgesInZip.length + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
-    console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
-    console.log('Fun fact, the zip code that Townview is in has had ' + zipCodeAges['75203'].length + ' arrests as of 2014');
-  });
-
 // Function to find the mode of an array
 function findMode(arr) {
     let frequency = {};  // Array of frequency.
@@ -98,3 +58,63 @@ function findLeastOccurring(array) {
 
     return leastOccurring;
 }
+
+// Function to find the standard deviation of an array
+function findStandardDeviation(arr, mean) {
+    let sumOfSquares = 0;
+    for(let i = 0; i < arr.length; i++) {
+        sumOfSquares += Math.pow(Number(arr[i]) - mean, 2);
+    }
+    let variance = sumOfSquares / arr.length;
+    return Math.sqrt(variance);
+}
+
+// Read and parse the CSV file
+fs.createReadStream('Police_Arrests.csv')
+  .pipe(csv())
+  .on('data', (row) => {
+    // Extract data from row
+    var arLZip = row[Object.keys(row)[8]];
+    var Race = row[Object.keys(row)[51]];
+    var AgeAtArrestTime = row[Object.keys(row)[39]];
+
+    // Add data to arrays
+    zipCodes.push(arLZip); 
+    race.push(Race);
+
+    // If age is not empty, add it to the array
+    if(!(AgeAtArrestTime === '')){
+        arrestAge.push(AgeAtArrestTime);
+
+        // If this zip code is not already in the object, add it
+        if(!zipCodeAges[arLZip]){
+          zipCodeAges[arLZip] = [];
+        }
+
+        // Add age to the array for this zip code
+        zipCodeAges[arLZip].push(AgeAtArrestTime);
+    }
+  })
+  .on('end', () => {
+    // Calculate statistics
+    let mostArrestZipCode = findMode(zipCodes);
+    let arrestAgesInZip = zipCodeAges[mostArrestZipCode];
+
+    // Calculate means
+    let totalArrestsMean = 35.16984164597521;
+    let mostArrestZipMean = 36.71599684791174;
+
+    // Calculate standard deviations
+    let totalArrestsStdDev = findStandardDeviation(arrestAge, totalArrestsMean);
+    let mostArrestZipStdDev = findStandardDeviation(arrestAgesInZip, mostArrestZipMean);
+
+    // Print statistics
+    console.log('The race arrested most is ' + findMode(race));
+    console.log('The zip code with the most arrest is ' + mostArrestZipCode);
+    console.log('The age with the most arrest is ' + findMode(arrestAge) + ' out of ' + arrestAge.length + ' with the average age of ' + findMean(arrestAge));
+    console.log('The age with most arrest in ' + mostArrestZipCode + ' is ' + findMode(arrestAgesInZip) + ' out of ' + arrestAgesInZip.length + ' with the average age in this zip code being ' + findMean(arrestAgesInZip));
+    console.log('The "least" dangerous area is ' + findLeastOccurring(zipCodes));
+    console.log('Fun fact, the zip code that Townview is in has had ' + zipCodeAges['75203'].length + ' arrests as of 2014');
+    console.log('The standard deviation of the total amount of arrests is ' + totalArrestsStdDev);
+    console.log('The standard deviation of the zip code with the most arrests is ' + mostArrestZipStdDev);
+  });
